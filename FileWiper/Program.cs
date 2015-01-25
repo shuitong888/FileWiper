@@ -39,18 +39,20 @@ namespace FileWiper
                     }
                     else if (System.IO.Directory.Exists(item))
                     {
-                        foreach (var file in System.IO.Directory.GetFiles(item))
+                        var files = System.IO.Directory.GetFiles(item, "*", System.IO.SearchOption.AllDirectories);
+                        if (files.Length == 0)
                         {
-                            try
+                            MessageBox.Show(string.Format(
+                                "No file exists under {0}", item), "Tip", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                        else if (MessageBox.Show(string.Format(
+                            "Are you sure to wipe {0} files under {1}?", files.Length, item), "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                        {
+                            foreach (var file in files)
                             {
                                 Helper.WipeFileContent(file);
                             }
-                            catch (Exception ex)
-                            {
-                                MessageBox.Show(ex.ToString(), "error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            }
                         }
-
                     }
                 }
                 catch (Exception ex)
